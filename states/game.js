@@ -1,3 +1,5 @@
+// clean up stars, they take place of kaboom / meteors
+
 export class Game {
     constructor(canvas, pencil) {
         this.canvas = canvas;
@@ -5,7 +7,7 @@ export class Game {
 
         // rainbow run guy
         this.x = 50;
-        this.y = 50;
+        this.y = 350;
         this.width = 50;
         this.height = 50;
 
@@ -13,8 +15,8 @@ export class Game {
         this.stars = [];
  
         //
-        this.ySpeed = 0.5;
-        this.maximumYSpeed = 8;
+       this.xSpeed = 0.5;
+       this.maximumXSpeed = 8;
 
         // game stats (instance properties)
      
@@ -25,29 +27,27 @@ export class Game {
         this.image.src = "./states/playerPlaceHolder.png";
 
               // Controls (bound to window/canvas)
-        window.addEventListener("keydown", (e) => {
-            if (e.code === "Space") this.flap();
-            if (e.code === "Enter") this.shoot();
-        });
-        this.canvas.addEventListener("mousedown", () => this.flap());
+        // window.addEventListener("keydown", (e) => {
+        //     if (e.code === "Space") this.flap();
+        //     if (e.code === "Enter") this.shoot();
+        // });
+     
     }
 
     // called when you want to reset/start the gameplay (not creating timers)
     enterGame() {
         // reset stats
-        this.time = 0;
+        
         this.kaboom = 0;
-        document.getElementById("timeDisplay").innerHTML = "Time: " + this.time;
-        document.getElementById("kaboomDisplay").innerHTML = "KaBoom: " + this.kaboom;
+        document.getElementById("starDisplay").innerHTML = "KaBoom: " + this.kaboom;
 
         // reset bird
         this.x = 50;
         this.y = 50;
-        this.ySpeed = 0.5;
+        this.xSpeed = 0.5;
 
         // reset/respawn meteors & projectiles
-        this.meteors = [];
-        this.projectiles = [];
+        this.stars = [];
         for (let i = 0; i < 3; i++) {
             this.meteors.push(new Meteor(this.canvas, this.pencil));
         }
@@ -58,20 +58,20 @@ export class Game {
     }
 
     flap() {
-        this.ySpeed = -15;
+        this.xSpeed = -15;
     }
 
     gravity() {
-        this.y += this.ySpeed;
-        this.ySpeed += 2;
-        if (this.ySpeed > this.maximumYSpeed) this.ySpeed = this.maximumYSpeed;
+        // this.x += this.xSpeed;
+        // this.xSpeed += 2;
+        // if (this.xSpeed > this.maximumxSpeed) this.xSpeed = this.maximumxSpeed;
     }
 
-    shoot() {
-        let projX = this.x + this.width;
-        let projY = this.y + this.height / 2 - 2.5;
-        this.projectiles.push(new Projectile(projX, projY, this.pencil));
-    }
+    // shoot() {
+    //     let projX = this.x + this.width;
+    //     let projY = this.y + this.height / 2 - 2.5;
+    //     this.projectiles.push(new Projectile(projX, projY, this.pencil));
+    // }
 
     // AABB collision
     checkCollision(bird, meteor) {
