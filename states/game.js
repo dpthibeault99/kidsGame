@@ -12,12 +12,17 @@ export class Game {
         this.height = 50;
 
         // collect 10
+        // this.toolbox = new Toolbox();
         this.stars = [];
  
         // scroll world left (doesnt work)
        this.xSpeed = 0.5;
        this.maximumXSpeed = 8;
-       let platform = {
+
+       // this.platform, not Let. 
+       // this. should be used for 
+       // constructors 
+       this.platform = {
         x: 500,
         y: 450,
        width: 200,

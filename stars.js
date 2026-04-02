@@ -20,6 +20,19 @@ export class Stars{
 
         this.reset();
     }
+     reset() {
+        this.x = this.canvas.width;
+        this.y = Math.floor(Math.random() * (this.canvas.height - this.height));
+        this.speed = Math.random() * 5 + 2;
+    }
+
+    move() {
+        this.x -= this.speed;
+
+        if (this.x + this.width < 0) {
+            this.reset();
+        }
+    }
 
      draw()
       {
