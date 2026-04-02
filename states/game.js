@@ -64,7 +64,11 @@ export class Game {
     }
 
     draw() {
+        // the player
         this.pencil.drawImage(this.image, this.x, this.y, this.width, this.height);
+        // the platform
+        this.pencil.fillStyle = "green";
+        this.pencil
     }
 
 
