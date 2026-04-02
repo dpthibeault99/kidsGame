@@ -10,12 +10,6 @@ export class Stars{
 
         this.size = 60;
 
-         // rainbow run guy
-        this.x = 150;
-        this.y = 350;
-        this.width = 60;
-        this.height = 60;
-
 
         // Load image
         this.image = new Image();
