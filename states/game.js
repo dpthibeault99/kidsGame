@@ -14,9 +14,15 @@ export class Game {
         // collect 10
         this.stars = [];
  
-        //
+        // scroll world left (doesnt work)
        this.xSpeed = 0.5;
        this.maximumXSpeed = 8;
+       let platform = {
+        x: 500,
+        y: 450,
+       width: 200,
+       height: 20
+    };
 
         // game stats (instance properties)
      
@@ -26,11 +32,6 @@ export class Game {
         this.image = new Image();
         this.image.src = "./states/playerPlaceHolder.png";
 
-              // Controls (bound to window/canvas)
-        // window.addEventListener("keydown", (e) => {
-        //     if (e.code === "Space") this.flap();
-        //     if (e.code === "Enter") this.shoot();
-        // });
      
     }
 
@@ -38,17 +39,21 @@ export class Game {
     enterGame() {
         // reset stats
         
-        this.kaboom = 0;
-        document.getElementById("starDisplay").innerHTML = "KaBoom: " + this.kaboom;
+        this.starsCollected = 0;
+        document.getElementById("starDisplay").innerHTML = "Stars Collected: " + this.starsCollected;
 
         // reset bird
         this.x = 50;
         this.y = 50;
         this.xSpeed = 0.5;
 
+        //camera - scroll left
+        this.cameraX = 0;
+        this.worldSpeed = 0;
+
         // reset/respawn meteors & projectiles
         this.stars = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 10; i++) {
             this.meteors.push(new Meteor(this.canvas, this.pencil));
         }
     }
@@ -57,9 +62,6 @@ export class Game {
         this.pencil.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
-    flap() {
-        this.xSpeed = -15;
-    }
 
     gravity() {
         // this.x += this.xSpeed;
@@ -67,11 +69,6 @@ export class Game {
         // if (this.xSpeed > this.maximumxSpeed) this.xSpeed = this.maximumxSpeed;
     }
 
-    // shoot() {
-    //     let projX = this.x + this.width;
-    //     let projY = this.y + this.height / 2 - 2.5;
-    //     this.projectiles.push(new Projectile(projX, projY, this.pencil));
-    // }
 
     // AABB collision
     checkCollision(bird, meteor) {
@@ -130,10 +127,10 @@ export class Game {
                     p.y + p.height > meteor.y;
 
                 if (hit) {
-                    console.log("KaBOOM!");
-                    this.kaboom++;
-                    const kb = document.getElementById("kaboomDisplay");
-                    if (kb) kb.innerHTML = "KaBoom: " + this.kaboom;
+                    console.log("STAR  COLLECTED");
+                    this.starsCollected++;
+                    const kb = document.getElementById("starsDisplay");
+                    if (kb) kb.innerHTML = "Stars Collected: " + this.starsCollected;
 
                     // replace destroyed meteor with a new one
                     this.meteors.splice(m, 1);
@@ -143,7 +140,7 @@ export class Game {
                     this.projectiles.splice(i, 1);
 
                     // win condition example
-                    if (this.kaboom === 30) {
+                    if (this.starsCollected === 10) {
                         this.stopTimer();
                         this.changeToState = "youWin";
                         return "youWin";
