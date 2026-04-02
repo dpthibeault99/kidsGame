@@ -22,6 +22,147 @@ export class Game {
 
         // load image
         this.image = new Image();
-        this.image.src = "playerPlaceHolder/playerPlaceHolder.png";
+        this.image.src = "./states/playerPlaceHolder.png";
+
+              // Controls (bound to window/canvas)
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Space") this.flap();
+            if (e.code === "Enter") this.shoot();
+        });
+        this.canvas.addEventListener("mousedown", () => this.flap());
+    }
+
+    // called when you want to reset/start the gameplay (not creating timers)
+    enterGame() {
+        // reset stats
+        this.time = 0;
+        this.kaboom = 0;
+        document.getElementById("timeDisplay").innerHTML = "Time: " + this.time;
+        document.getElementById("kaboomDisplay").innerHTML = "KaBoom: " + this.kaboom;
+
+        // reset bird
+        this.x = 50;
+        this.y = 50;
+        this.ySpeed = 0.5;
+
+        // reset/respawn meteors & projectiles
+        this.meteors = [];
+        this.projectiles = [];
+        for (let i = 0; i < 3; i++) {
+            this.meteors.push(new Meteor(this.canvas, this.pencil));
+        }
+    }
+
+    draw() {
+        this.pencil.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+
+    flap() {
+        this.ySpeed = -15;
+    }
+
+    gravity() {
+        this.y += this.ySpeed;
+        this.ySpeed += 2;
+        if (this.ySpeed > this.maximumYSpeed) this.ySpeed = this.maximumYSpeed;
+    }
+
+    shoot() {
+        let projX = this.x + this.width;
+        let projY = this.y + this.height / 2 - 2.5;
+        this.projectiles.push(new Projectile(projX, projY, this.pencil));
+    }
+
+    // AABB collision
+    checkCollision(bird, meteor) {
+        return !(
+            bird.x + bird.width < meteor.x ||
+            bird.x > meteor.x + meteor.size ||
+            bird.y + bird.height < meteor.y ||
+            bird.y > meteor.y + meteor.size
+        );
+    }
+
+
+    update() {
+        this.pencil.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // bird
+        this.gravity();
+        this.draw();
+
+        // meteors
+        for (let m of this.meteors) {
+            m.move();
+            m.draw();
+        }
+
+        // bird hitbox
+        let birdBox = { x: this.x, y: this.y, width: this.width, height: this.height };
+
+        // bird–meteor collision (immediate return to stop further updates)
+        for (let m of this.meteors) {
+            if (this.checkCollision(birdBox, m)) {
+                console.log("HIT!");
+                this.stopTimer();           // stop counting time
+                this.changeToState = "gameOver";
+                return "gameOver";          // immediately switch state
+            }
+        }
+
+        // projectiles: update & check projectile→meteor collisions
+        for (let i = this.projectiles.length - 1; i >= 0; i--) {
+            let p = this.projectiles[i];
+            p.update();
+            p.draw();
+
+            if (p.isOffscreen(this.canvas.width)) {
+                this.projectiles.splice(i, 1);
+                continue;
+            }
+
+            for (let m = this.meteors.length - 1; m >= 0; m--) {
+                let meteor = this.meteors[m];
+                let hit =
+                    p.x < meteor.x + meteor.size &&
+                    p.x + p.width > meteor.x &&
+                    p.y < meteor.y + meteor.size &&
+                    p.y + p.height > meteor.y;
+
+                if (hit) {
+                    console.log("KaBOOM!");
+                    this.kaboom++;
+                    const kb = document.getElementById("kaboomDisplay");
+                    if (kb) kb.innerHTML = "KaBoom: " + this.kaboom;
+
+                    // replace destroyed meteor with a new one
+                    this.meteors.splice(m, 1);
+                    this.meteors.push(new Meteor(this.canvas, this.pencil));
+
+                    // remove projectile
+                    this.projectiles.splice(i, 1);
+
+                    // win condition example
+                    if (this.kaboom === 30) {
+                        this.stopTimer();
+                        this.changeToState = "youWin";
+                        return "youWin";
+                    }
+                    break;
+                }
+            }
+        }
+
+        // HUD
+        this.pencil.fillStyle = "gray";
+        this.pencil.font = "20px Georgia";
+        this.pencil.fillText("Game", 300, 50);
+
+        // return state if set (keeps compatibility if code expects it)
+        if (this.changeToState) {
+            const result = this.changeToState;
+            this.changeToState = false;
+            return result;
+        }
     }
 }

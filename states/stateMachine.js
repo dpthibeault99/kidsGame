@@ -1,16 +1,15 @@
 // copyied from term 1 final -- needs revisons
 
-import { Game } from "./states/game.js";
-import { Gameover } from "./states/gameOver.js";
-import { Title } from "./states/title.js";
-import { Toolbox } from "./toolbox.js";
-import { Credits } from "./states/credits.js";
-import { Meteor } from "./states/meteor.js";
-import { YouWin } from "./states/youWin.js";
+import { Title } from "./title.js";
+import { Game } from "./game.js";
+import { Credits } from "./credits.js";
+import { YouWin } from "./youWin.js";
+import { Toolbox } from "../toolbox.js";
 
 let canvas = document.getElementById("myCanvas");
 let pencil = canvas.getContext("2d");
 let toolbox = new Toolbox();
+
 
 let state = new Title(canvas, pencil);
 
