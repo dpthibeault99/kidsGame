@@ -1,5 +1,3 @@
-// clean up stars, they take place of kaboom / meteors
-
 export class Game {
     constructor(canvas, pencil) {
         this.canvas = canvas;
@@ -7,132 +5,117 @@ export class Game {
 
         // rainbow run guy
         this.x = 50;
-        this.y = 350;
+        this.y = 50;
         this.width = 50;
         this.height = 50;
 
-        // collect 10
-        // this.toolbox = new Toolbox();
+        // stars (objects in world)
         this.stars = [];
- 
-        // scroll world left (doesnt work)
-       this.xSpeed = 0.5;
-       this.maximumXSpeed = 8;
 
-       // this.platform, not Let. 
-       // this. should be used for 
-       // constructors 
-       this.platform = {
-        x: 500,
-        y: 450,
-       width: 200,
-       height: 20
-    };
+        // IMPORTANT (was missing)
+        this.projectiles = [];
 
-        // game stats (instance properties)
-     
+        // scroll world left
+        this.xSpeed = 0.5;
+        this.maximumXSpeed = 8;
+
+        this.platform = {
+            x: 500,
+            y: 450,
+            width: 200,
+            height: 20
+        };
+
         this.starsCollected = 0;
 
-        // load image
         this.image = new Image();
         this.image.src = "./states/playerPlaceHolder.png";
-
-     
     }
 
-    // called when you want to reset/start the gameplay (not creating timers)
     enterGame() {
-        // reset stats
-        
         this.starsCollected = 0;
-        document.getElementById("starDisplay").innerHTML = "Stars Collected: " + this.starsCollected;
 
-        // reset bird
+        // FIXED ID
+        document.getElementById("starsDisplay").innerHTML =
+            "Stars Collected: " + this.starsCollected;
+
+         // player start point
         this.x = 50;
-        this.y = 50;
+        this.y = 400;
         this.xSpeed = 0.5;
 
-        //camera - scroll left
         this.cameraX = 0;
         this.worldSpeed = 0;
 
-        // reset/respawn meteors & projectiles
+        // spawn stars
         this.stars = [];
         for (let i = 0; i < 10; i++) {
-            this.stars.push(new Meteor(this.canvas, this.pencil));
+            this.stars.push(new Meteor(this.canvas, this.pencil)); // class still Meteor (OK)
         }
     }
 
     draw() {
-        // the player
         this.pencil.drawImage(this.image, this.x, this.y, this.width, this.height);
-        // the platform
+
         this.pencil.fillStyle = "green";
         this.pencil.fillRect(
             this.platform.x,
             this.platform.y,
             this.platform.width,
-            this.platform.height,
-        )
-    }
-
-
-    gravity() {
-        // this.x += this.xSpeed;
-        // this.xSpeed += 2;
-        // if (this.xSpeed > this.maximumxSpeed) this.xSpeed = this.maximumxSpeed;
-    }
-
-
-    // AABB collision
-    checkCollision(bird, meteor) {
-        return !(
-            bird.x + bird.width < meteor.x ||
-            bird.x > meteor.x + meteor.size ||
-            bird.y + bird.height < meteor.y ||
-            bird.y > meteor.y + meteor.size
+            this.platform.height
         );
     }
 
+    gravity() {}
+
+    // renamed star
+    checkCollision(bird, star) {
+        return !(
+            bird.x + bird.width < star.x ||
+            bird.x > star.x + star.size ||
+            bird.y + bird.height < star.y ||
+            bird.y > star.y + star.size
+        );
+    }
 
     update() {
         this.pencil.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // simulate world moving left
-        this.cameraX += this.xSpeed;
 
-        // move platform left
+        // scrolling
+        this.cameraX += this.xSpeed;
         this.platform.x -= this.xSpeed;
 
-        // test infinite scrolling (reset when off screen)
         if (this.platform.x + this.platform.width < 0) {
-        this.platform.x = this.canvas.width;
-        } this.draw();
-    
-        // bird
+            this.platform.x = this.canvas.width;
+        }
+
         this.gravity();
         this.draw();
 
-        // meteors
-        for (let m of this.meteors) {
-            m.move();
-            m.draw();
+        //  STARS
+        for (let s of this.stars) {
+            s.move();
+            s.draw();
         }
 
-        // bird hitbox
-        let birdBox = { x: this.x, y: this.y, width: this.width, height: this.height };
+        let birdBox = {
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height
+        };
 
-        // bird–meteor collision (immediate return to stop further updates)
-        for (let m of this.meteors) {
-            if (this.checkCollision(birdBox, m)) {
+        // collision with stars
+        for (let s of this.stars) {
+            if (this.checkCollision(birdBox, s)) {
                 console.log("HIT!");
-                this.stopTimer();           // stop counting time
+                this.stopTimer();
                 this.changeToState = "gameOver";
-                return "gameOver";          // immediately switch state
+                return "gameOver";
             }
         }
 
-        // projectiles: update & check projectile→meteor collisions
+        // projectiles vs stars
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             let p = this.projectiles[i];
             p.update();
@@ -143,28 +126,30 @@ export class Game {
                 continue;
             }
 
-            for (let m = this.meteors.length - 1; m >= 0; m--) {
-                let meteor = this.meteors[m];
+            for (let s = this.stars.length - 1; s >= 0; s--) {
+                let star = this.stars[s];
+
                 let hit =
-                    p.x < meteor.x + meteor.size &&
-                    p.x + p.width > meteor.x &&
-                    p.y < meteor.y + meteor.size &&
-                    p.y + p.height > meteor.y;
+                    p.x < star.x + star.size &&
+                    p.x + p.width > star.x &&
+                    p.y < star.y + star.size &&
+                    p.y + p.height > star.y;
 
                 if (hit) {
-                    console.log("STAR  COLLECTED");
+                    console.log("STAR COLLECTED");
+
                     this.starsCollected++;
                     const kb = document.getElementById("starsDisplay");
-                    if (kb) kb.innerHTML = "Stars Collected: " + this.starsCollected;
+                    if (kb) {
+                        kb.innerHTML = "Stars Collected: " + this.starsCollected;
+                    }
 
-                    // replace destroyed meteor with a new one
-                    this.meteors.splice(m, 1);
-                    this.meteors.push(new Meteor(this.canvas, this.pencil));
+                    // replace star
+                    this.stars.splice(s, 1);
+                    this.stars.push(new Meteor(this.canvas, this.pencil));
 
-                    // remove projectile
                     this.projectiles.splice(i, 1);
 
-                    // win condition example
                     if (this.starsCollected === 10) {
                         this.stopTimer();
                         this.changeToState = "youWin";
@@ -175,12 +160,10 @@ export class Game {
             }
         }
 
-        // HUD
         this.pencil.fillStyle = "gray";
         this.pencil.font = "20px Georgia";
         this.pencil.fillText("Game", 300, 50);
 
-        // return state if set (keeps compatibility if code expects it)
         if (this.changeToState) {
             const result = this.changeToState;
             this.changeToState = false;
