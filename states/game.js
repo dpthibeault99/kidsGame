@@ -59,7 +59,7 @@ export class Game {
         // reset/respawn meteors & projectiles
         this.stars = [];
         for (let i = 0; i < 10; i++) {
-            this.meteors.push(new Meteor(this.canvas, this.pencil));
+            this.stars.push(new Meteor(this.canvas, this.pencil));
         }
     }
 
@@ -68,7 +68,12 @@ export class Game {
         this.pencil.drawImage(this.image, this.x, this.y, this.width, this.height);
         // the platform
         this.pencil.fillStyle = "green";
-        this.pencil
+        this.pencil.fillRect(
+            this.platform.x,
+            this.platform.y,
+            this.platform.width,
+            this.platform.height,
+        )
     }
 
 
@@ -92,7 +97,18 @@ export class Game {
 
     update() {
         this.pencil.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // simulate world moving left
+        this.cameraX += this.xSpeed;
 
+        // move platform left
+        this.platform.x -= this.xSpeed;
+
+        // test infinite scrolling (reset when off screen)
+        if (this.platform.x + this.platform.width < 0) {
+        this.platform.x = this.canvas.width;
+        } this.draw();
+    
         // bird
         this.gravity();
         this.draw();
