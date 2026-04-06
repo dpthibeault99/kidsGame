@@ -12,9 +12,6 @@ export class Game {
         // stars (objects in world)
         this.stars = [];
 
-        // IMPORTANT (was missing)
-        this.projectiles = [];
-
         // scroll world left
         this.xSpeed = 0.5;
         this.maximumXSpeed = 8;
@@ -50,7 +47,7 @@ export class Game {
         // spawn stars
         this.stars = [];
         for (let i = 0; i < 10; i++) {
-            this.stars.push(new Meteor(this.canvas, this.pencil)); // class still Meteor (OK)
+            this.stars.push(new Star(this.canvas, this.pencil)); 
         }
     }
 
@@ -66,7 +63,7 @@ export class Game {
         );
     }
 
-    gravity() {}
+    gravity() {} // need to redue
 
     // renamed star
     checkCollision(bird, star) {
