@@ -1,26 +1,19 @@
-export class Stars{
-
-    
-    canvas;
-    pencil;
-
+export class Stars {
     constructor(canvas, pencil) {
         this.canvas = canvas;
         this.pencil = pencil;
 
         this.size = 60;
-
-
-        // Load image
-        this.image = new Image();
-        this.image.src = "./states/starPlaceHolder.png";
-
         this.width = this.size;
         this.height = this.size;
 
+        this.image = new Image();
+        this.image.src = "./states/starPlaceHolder.png";
+
         this.reset();
     }
-     reset() {
+
+    reset() {
         this.x = this.canvas.width;
         this.y = Math.floor(Math.random() * (this.canvas.height - this.height));
         this.speed = Math.random() * 5 + 2;
@@ -34,10 +27,7 @@ export class Stars{
         }
     }
 
-     draw()
-      {
-
-        // Draw star
+    draw() {
         this.pencil.drawImage(
             this.image,
             this.x,
@@ -46,6 +36,4 @@ export class Stars{
             this.height
         );
     }
-
-
 }
