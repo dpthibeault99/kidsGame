@@ -19,7 +19,7 @@ export class Game {
         this.xSpeed = 3;
         this.maximumXSpeed = 8;
         this.cameraX = 0;
-        this.worldSpeed = 0;
+        this.worldSpeed = 5;
         this.changeToState = false;
 
         // platform
@@ -84,7 +84,7 @@ export class Game {
     }
 
     gravity() {
-        // placeholder until you add jumping/falling logic
+        // placeholder until  jumping/falling logic
     }
 
     checkCollision(player, star) {
