@@ -27,7 +27,7 @@ export class Game {
             x: 500,
             y: 450,
             width: 200,
-            height: 20
+            height: 150
         };
 
         // player image
@@ -40,7 +40,8 @@ export class Game {
         this.x = 50;
         this.y = 400;
 
-        this.xSpeed = 3;
+            // this.xspeed --controls the platfrom
+        this.xSpeed = 13;
         this.cameraX = 0;
         this.worldSpeed = 0;
         this.changeToState = false;
