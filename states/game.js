@@ -11,6 +11,11 @@ export class Game {
         this.width = 50;
         this.height = 50;
 
+        this.ySpeed = 0;
+        this.gravityForce = 0.8;
+        this.jumpStrength = -15;
+        this.onGround = true;
+
         // stars
         this.stars = [];
         this.starsCollected = 0;
@@ -33,14 +38,21 @@ export class Game {
         // player image
         this.image = new Image();
         this.image.src = "./states/playerPlaceHolder.png";
+
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+                this.jump();
+            }
+        });
     }
 
     enterGame() {
         this.starsCollected = 0;
         this.x = 50;
         this.y = 400;
+        this.ySpeed = 0;
+        this.onGround = true;
 
-            // this.xspeed --controls the platfrom
         this.xSpeed = 13;
         this.cameraX = 0;
         this.worldSpeed = 0;
@@ -84,8 +96,24 @@ export class Game {
         this.pencil.fillText("Game", 300, 50);
     }
 
-    gravity() {
-        // placeholder until  jumping/falling logic
+    jump() {
+        if (this.onGround) {
+            this.ySpeed = this.jumpStrength;
+            this.onGround = false;
+        }
+    }
+
+    applyGravity() {
+        this.ySpeed += this.gravityForce;
+        this.y += this.ySpeed;
+
+        const groundY = 400;
+
+        if (this.y >= groundY) {
+            this.y = groundY;
+            this.ySpeed = 0;
+            this.onGround = true;
+        }
     }
 
     checkCollision(player, star) {
@@ -116,6 +144,10 @@ export class Game {
                 if (display) {
                     display.innerHTML = "Stars Collected: " + this.starsCollected;
                 }
+                if(this.starsCollected === 10){
+                    this.changeToState = "youWin";
+                    return "youWin";
+                }
             }
         }
     }
@@ -123,7 +155,6 @@ export class Game {
     update() {
         this.pencil.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // scrolling
         this.cameraX += this.xSpeed;
         this.platform.x -= this.xSpeed;
 
@@ -131,7 +162,7 @@ export class Game {
             this.platform.x = this.canvas.width;
         }
 
-        this.gravity();
+        this.applyGravity();
 
         for (const star of this.stars) {
             star.move();

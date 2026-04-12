@@ -1,7 +1,7 @@
+import { Toolbox } from "../toolbox.js"; // breaks without this import
+
+
 export class YouWin {
-
-    
-
     canvas;
        pencil;
        changeToState = false;
