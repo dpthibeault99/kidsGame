@@ -19,6 +19,8 @@ export class Game {
         // stars
         this.stars = [];
         this.starsCollected = 0;
+        this.maxStarsCollected = 10;
+        this.starsOnScreen = 2;
 
         // world scroll
         this.xSpeed = 3;
@@ -67,7 +69,7 @@ export class Game {
         }
 
         this.stars = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 3; i++) {
             const star = new Stars(this.canvas, this.pencil);
             star.x = this.canvas.width + i * 150;
             this.stars.push(star);
